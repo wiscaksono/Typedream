@@ -15,3 +15,7 @@
 .Toastify__close-button {
   @apply !text-white;
 }
+
+pre {
+  @apply bg-[#333333] text-white;
+}

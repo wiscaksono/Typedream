@@ -1,22 +1,17 @@
 import { Popover, Transition, Dialog } from "@headlessui/react";
 import { useState, Fragment, useRef } from "react";
-import { BiFolderPlus } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { RxCalendar } from "react-icons/rx";
 import { HiOutlineTrash } from "react-icons/hi";
 import { HiOutlineArchiveBox } from "react-icons/hi2";
 import { toast } from "react-toastify";
+import { FaBold, FaItalic, FaAlignJustify, FaUnderline } from "react-icons/fa";
 
 import api from "@/services/api";
 
 export default function Home({ items }) {
   const [content, setContent] = useState(items[0]);
   const [noteTab, setNoteTab] = useState();
-
-  const handleToast = () => {
-    toast.success("Successfully deleted");
-    toast.error("Erorr!");
-  };
 
   return (
     <>
@@ -40,8 +35,9 @@ const Content = ({ data }) => {
         <h1 className="text-[32px] font-semibold text-white">{data.title}</h1>
         <PopoverButton data={data} />
       </div>
-      <div className="space-y-[15px] ">
-        <div className="text-white/40 text-sm font-semibold grid grid-cols-[30px_100px_auto] gap-5">
+
+      <div>
+        <div className="text-white/40 text-sm font-semibold grid grid-cols-[30px_100px_auto] gap-5 mb-[15px]">
           <RxCalendar className="text-lg" />
           <p>Date</p>
           <p className="text-white underline underline-offset-2">
@@ -52,13 +48,23 @@ const Content = ({ data }) => {
             })}
           </p>
         </div>
-        <div className="h-px bg-white/10 w-full" />
-        <div className="text-white/40 text-sm font-semibold grid grid-cols-[30px_100px_auto] gap-5">
-          <BiFolderPlus className="text-lg" />
-          <p>Folder</p>
-          <p className="text-white underline underline-offset-2">Personal</p>
+        <div className="py-[15px] border-y border-white/10 flex gap-2.5 text-white">
+          <button>
+            <FaBold />
+          </button>
+          <button>
+            <FaItalic />
+          </button>
+          <button>
+            <FaAlignJustify />
+          </button>
+          <button>
+            <FaUnderline />
+          </button>
         </div>
       </div>
+
+      <div>{data.description}</div>
     </section>
   );
 };
@@ -244,7 +250,6 @@ const Aside = ({ items, content, setNoteTab, setContent }) => {
 
 export async function getServerSideProps() {
   const { items } = await api.get("/notes/records");
-
   return {
     props: {
       items,
