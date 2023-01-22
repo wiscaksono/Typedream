@@ -1,4 +1,4 @@
-import { Editor, Transforms, Text, Element } from "slate";
+import { Editor, Transforms, Text, Element, Node } from "slate";
 
 import { TEXT_ALIGN_TYPES, LIST_TYPES } from "./utils";
 
@@ -48,6 +48,17 @@ class SlateEditor {
       const block = { type: format, children: [] };
       Transforms.wrapNodes(editor, block);
     }
+  }
+
+  serialize(value) {
+    return value.map((n) => Node.string(n)).join("\n");
+  }
+  deserialize(string) {
+    return string.split("\n").map((line) => {
+      return {
+        children: [{ text: line }],
+      };
+    });
   }
 }
 

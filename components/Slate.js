@@ -30,6 +30,7 @@ import CustomEditor from "@/services/slateEditor";
 import { HOTKEYS_BLOCK, HOTKEYS_MARK } from "@/services/utils";
 
 export default function SlateEditor({ data }) {
+  const [value, setValue] = useState();
   const [search, setSearch] = useState();
   const [isSearch, setIsSearch] = useState(false);
   const renderElement = useCallback((props) => <Element {...props} />, []);
@@ -80,9 +81,32 @@ export default function SlateEditor({ data }) {
     },
   ];
 
+  useEffect(() => {
+    setValue(
+      CustomEditor.deserialize(
+        localStorage.getItem("content") || "A String of plain text"
+      )
+    );
+  }, []);
+
+  console.log(value);
+
+  const handleChange = (value) => {
+    const isAstChange = editor.operations.some(
+      (op) => "set_selection" !== op.type
+    );
+    if (isAstChange) {
+      localStorage.setItem("content", CustomEditor.serialize(value));
+    }
+  };
+
   return (
     <div className="h-full">
-      <Slate editor={editor} value={initialValue}>
+      <Slate
+        editor={editor}
+        value={initialValue}
+        onChange={(value) => handleChange(value)}
+      >
         <Toolbar>
           <MarkButton format="bold" icon={<FaBold />} />
           <MarkButton format="italic" icon={<FaItalic />} />
