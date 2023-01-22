@@ -1,37 +1,35 @@
-import { useCallback, useMemo, useState, useEffect } from "react";
+import isHotkey from "is-hotkey";
+import { useCallback, useMemo, useState } from "react";
 import {
-  FaSearch,
   FaBold,
   FaCode,
   FaItalic,
-  FaUnderline,
   FaQuoteRight,
+  FaSearch,
+  FaUnderline,
 } from "react-icons/fa";
 import {
-  MdFormatListNumbered,
-  MdFormatListBulleted,
-  MdFormatAlignLeft,
   MdFormatAlignCenter,
-  MdFormatAlignRight,
   MdFormatAlignJustify,
+  MdFormatAlignLeft,
+  MdFormatAlignRight,
+  MdFormatListBulleted,
+  MdFormatListNumbered,
 } from "react-icons/md";
-import { createEditor, Text } from "slate";
+import { Text, createEditor } from "slate";
 import { withHistory } from "slate-history";
 import { Editable, Slate, withReact } from "slate-react";
-import isHotkey from "is-hotkey";
 
-import MarkButton from "./MarkButton";
 import BlockButton from "./BlockButton";
+import MarkButton from "./MarkButton";
 import Element from "./Slate/Element";
 import Leaf from "./Slate/Leaf";
 import Toolbar from "./Toolbar";
 
 import CustomEditor from "@/services/slateEditor";
-import api from "@/services/api";
 import { HOTKEYS_BLOCK, HOTKEYS_MARK } from "@/services/utils";
 
-export default function SlateEditor({ data, id, setValues }) {
-  const [value, setValue] = useState();
+export default function SlateEditor({ data }) {
   const [search, setSearch] = useState();
   const [isSearch, setIsSearch] = useState(false);
   const renderElement = useCallback((props) => <Element {...props} />, []);
@@ -64,32 +62,9 @@ export default function SlateEditor({ data, id, setValues }) {
     [search]
   );
 
-  useEffect(() => {
-    setValue(CustomEditor.deserialize(data || "A String of plain text"));
-  }, []);
-
-  const handleChange = (value) => {
-    const isAstChange = editor.operations.some(
-      (op) => "set_selection" !== op.type
-    );
-    if (isAstChange)
-      () => {
-        setValues({
-          description: CustomEditor.serialize(value),
-        });
-        console.log("setted");
-      };
-  };
-
-  if (!value) return;
-
   return (
     <div className="h-full">
-      <Slate
-        editor={editor}
-        value={value}
-        onChange={(value) => handleChange(value)}
-      >
+      <Slate editor={editor} value={data}>
         <Toolbar>
           <MarkButton format="bold" icon={<FaBold />} />
           <MarkButton format="italic" icon={<FaItalic />} />

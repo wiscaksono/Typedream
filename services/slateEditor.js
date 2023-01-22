@@ -1,6 +1,6 @@
-import { Editor, Transforms, Text, Element, Node } from "slate";
+import { Editor, Element, Node, Transforms } from "slate";
 
-import { TEXT_ALIGN_TYPES, LIST_TYPES } from "./utils";
+import { LIST_TYPES, TEXT_ALIGN_TYPES } from "./utils";
 
 class SlateEditor {
   toggleMark(editor, format) {

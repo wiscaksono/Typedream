@@ -1,37 +1,74 @@
-import { Popover, Transition, Dialog } from "@headlessui/react";
-import { useState, Fragment, useRef, useEffect } from "react";
+import Head from "next/head";
+import { Dialog, Popover, Transition } from "@headlessui/react";
+import { Fragment, useRef, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
-import { FaRegSave, FaSearch } from "react-icons/fa";
-import { RxCalendar } from "react-icons/rx";
-import { HiOutlineTrash, HiPlus } from "react-icons/hi";
+import { FaRegSave } from "react-icons/fa";
+import { HiOutlineTrash } from "react-icons/hi";
 import { HiOutlineArchiveBox } from "react-icons/hi2";
+import { RxCalendar } from "react-icons/rx";
 import { toast } from "react-toastify";
-
-import api from "@/services/api";
 
 import SlateEditor from "@/components/Slate";
 
-export default function Home({ items }) {
-  const [content, setContent] = useState(items[0]);
+export default function Home() {
+  const initialValue = [
+    {
+      type: "paragraph",
+      children: [
+        { text: "This is editable " },
+        { text: "rich", bold: true },
+        { text: " text, " },
+        { text: "much", italic: true },
+        { text: " better than a " },
+        { text: "<textarea>", code: true },
+        { text: "!" },
+      ],
+    },
+    {
+      type: "paragraph",
+      children: [
+        {
+          text: "Since it's rich text, you can do things like turn a selection of text ",
+        },
+        { text: "bold", bold: true },
+        {
+          text: ", or add a semantically rendered block quote in the middle of the page, like this:",
+        },
+      ],
+    },
+    {
+      type: "block-quote",
+      children: [{ text: "A wise quote." }],
+    },
+    {
+      type: "paragraph",
+      align: "center",
+      children: [{ text: "Try it out for yourself!" }],
+    },
+  ];
 
   return (
     <>
+      <Head>
+        <title>Typedream | Take Home Project</title>
+        <meta charset="UTF-8" />
+        <meta name="description" content="Take Home Project" />
+        <meta
+          name="keywords"
+          content="HTML, CSS, JavaScript, Next.Js, React.Js, SlateJs"
+        />
+        <meta name="author" content="Wisnu Wicaksono" />
+      </Head>
       <div className="bg-primary h-screen overflow-hidden flex">
-        <Aside items={items} content={content} setContent={setContent} />
-        <Content data={content} />
+        <Content data={initialValue} />
       </div>
     </>
   );
 }
 
 const Content = ({ data }) => {
-  const [values, setValues] = useState(data.description);
   const handleSave = async () => {
     try {
-      await api.update("notes", data.id, {
-        title: data.title,
-        description: data.description,
-      });
       toast.success("Successfully saved");
     } catch (err) {
       toast.error("Error");
@@ -42,7 +79,7 @@ const Content = ({ data }) => {
   return (
     <section className="space-y-[30px] w-full p-[50px]">
       <div className="flex justify-between items-center">
-        <h1 className="text-[32px] font-semibold text-white">{data.title}</h1>
+        <h1 className="text-[32px] font-semibold text-white">Typedream</h1>
         <div className="flex items-center gap-5">
           <button
             onClick={handleSave}
@@ -60,27 +97,19 @@ const Content = ({ data }) => {
           <RxCalendar className="text-lg" />
           <p>Date</p>
         </div>
-        <p className="text-white">
-          {new Date(data.created).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })}
-        </p>
+        <p className="text-white">23/01/2023</p>
       </div>
-      <SlateEditor data={values} id={data.id} setValue={setValues} />
+      <SlateEditor data={data} />
     </section>
   );
 };
 
-const PopoverButton = (data) => {
+const PopoverButton = () => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const cancelButtonRef = useRef(null);
-  const { id } = data.data;
 
   const handleDelete = async () => {
     try {
-      await api.delete("notes", id);
       toast.success("Successfully deleted");
       setOpenModalDelete(false);
     } catch (error) {
@@ -209,76 +238,3 @@ const PopoverButton = (data) => {
     </>
   );
 };
-
-const Aside = ({ items, content, setContent }) => {
-  const handleButton = (item) => {
-    setContent(items.filter((x) => x.id === item.id)[0]);
-  };
-
-  const AsideButton = ({ item }) => {
-    return (
-      <button
-        onClick={() => handleButton(item)}
-        className={`${
-          item.id === content.id ? "bg-white/10" : "bg-white/[3%]"
-        } transition-colors p-5 rounded-3 text-left hover:bg-white/10`}
-      >
-        <h3 className="font-semibold text-lg text-white truncate">
-          {item.title}
-        </h3>
-
-        <div className="flex gap-2.5">
-          <span className="text-white/40">
-            {new Date(item.created).toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })}
-          </span>
-          <p className="truncate text-white/60">
-            {item.description.match(/^(\S+\s){5}\S+/)}
-          </p>
-        </div>
-      </button>
-    );
-  };
-
-  return (
-    <aside className="h-full w-[350px] bg-seconday py-[30px] px-5">
-      <div className="flex items-center justify-between mb-[30px]">
-        <h3 className="font-bold text-white text-2xl font-kaushan">Nowted</h3>
-        <button>
-          <FaSearch className="text-white/40 text-lg" />
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-5">
-        <button
-          className="flex items-center justify-center text-white font-semibold py-2.5 w-full rounded-3 bg-white/[3%] hover:bg-white/10 transition-colors gap-2"
-          onClick={() =>
-            setContent({
-              title: "New note",
-              created: new Date().toISOString().replace("T", " "),
-              description: "Write something nice!",
-            })
-          }
-        >
-          <HiPlus />
-          <span>New Note</span>
-        </button>
-        {items.map((item) => (
-          <AsideButton item={item} key={item.id} />
-        ))}
-      </div>
-    </aside>
-  );
-};
-
-export async function getServerSideProps() {
-  const { items } = await api.get("/notes/records");
-  return {
-    props: {
-      items,
-    },
-  };
-}
