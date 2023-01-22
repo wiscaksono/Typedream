@@ -1,21 +1,66 @@
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-family: "Source Sans Pro", sans-serif;
+@layer base {
+  * {
+    font-family: "Source Sans Pro", sans-serif;
+  }
+
+  :not(pre) > code {
+    @apply !font-mono bg-[#333333] p-[3px];
+  }
+
+  [data-slate-editor] > * + * {
+    margin-top: 1em;
+  }
+
+  blockquote {
+    @apply border-l-2 border-[#ddd] m-0 pl-2.5 italic text-[#aaa] bg-[#232323];
+  }
+
+  #slate-editor span {
+    @apply font-sans;
+  }
+
+  #slate-editor > ol {
+    display: block;
+    list-style-type: decimal;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+  }
+
+  #slate-editor ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+  }
+
+  #slate-editor h1 {
+    @apply text-3xl;
+  }
+
+  #slate-editor h2 {
+    @apply text-2xl;
+  }
 }
 
-.Toastify__toast.Toastify__toast-theme--light.Toastify__toast.Toastify__toast--close-on-click {
-  @apply bg-[#333333] text-white;
-}
+@layer components {
+  .Toastify__toast.Toastify__toast-theme--light.Toastify__toast.Toastify__toast--close-on-click {
+    @apply bg-[#333333] text-white;
+  }
 
-.Toastify__close-button {
-  @apply !text-white;
-}
-
-pre {
-  @apply bg-[#333333] text-white;
+  .Toastify__close-button {
+    @apply !text-white;
+  }
 }

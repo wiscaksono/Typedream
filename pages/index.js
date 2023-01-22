@@ -5,23 +5,18 @@ import { RxCalendar } from "react-icons/rx";
 import { HiOutlineTrash } from "react-icons/hi";
 import { HiOutlineArchiveBox } from "react-icons/hi2";
 import { toast } from "react-toastify";
-import { FaBold, FaItalic, FaAlignJustify, FaUnderline } from "react-icons/fa";
 
 import api from "@/services/api";
 
+import SlateEditor from "@/components/Slate";
+
 export default function Home({ items }) {
   const [content, setContent] = useState(items[0]);
-  const [noteTab, setNoteTab] = useState();
 
   return (
     <>
       <div className="bg-primary h-screen overflow-hidden flex">
-        <Aside
-          items={items}
-          content={content}
-          setContent={setContent}
-          setNoteTab={setNoteTab}
-        />
+        <Aside items={items} content={content} setContent={setContent} />
         <Content data={content} />
       </div>
     </>
@@ -36,35 +31,20 @@ const Content = ({ data }) => {
         <PopoverButton data={data} />
       </div>
 
-      <div>
-        <div className="text-white/40 text-sm font-semibold grid grid-cols-[30px_100px_auto] gap-5 mb-[15px]">
+      <div className="text-white/40 text-sm font-semibold flex items-center gap-5 mb-[15px]">
+        <div className="flex items-center gap-2">
           <RxCalendar className="text-lg" />
           <p>Date</p>
-          <p className="text-white underline underline-offset-2">
-            {new Date(data.created).toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })}
-          </p>
         </div>
-        <div className="py-[15px] border-y border-white/10 flex gap-2.5 text-white">
-          <button>
-            <FaBold />
-          </button>
-          <button>
-            <FaItalic />
-          </button>
-          <button>
-            <FaAlignJustify />
-          </button>
-          <button>
-            <FaUnderline />
-          </button>
-        </div>
+        <p className="text-white">
+          {new Date(data.created).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })}
+        </p>
       </div>
-
-      <div>{data.description}</div>
+      <SlateEditor data={data.id} />
     </section>
   );
 };
@@ -206,10 +186,36 @@ const PopoverButton = (data) => {
   );
 };
 
-const Aside = ({ items, content, setNoteTab, setContent }) => {
+const Aside = ({ items, content, setContent }) => {
   const handleButton = (item) => {
-    setNoteTab(item.id);
     setContent(items.filter((x) => x.id === item.id)[0]);
+  };
+
+  const AsideButton = ({ item }) => {
+    return (
+      <button
+        onClick={() => handleButton(item)}
+        className={`${
+          item.id === content.id ? "bg-white/10" : "bg-white/[3%]"
+        } transition-colors p-5 rounded-3 text-left hover:bg-white/10`}
+      >
+        <h3 className="font-semibold text-lg text-white truncate">
+          {item.title}
+        </h3>
+        <div className="flex gap-2.5">
+          <span className="text-white/40">
+            {new Date(item.created).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
+          </span>
+          <p className="truncate text-white/60">
+            {item.description.match(/^(\S+\s){5}\S+/)}
+          </p>
+        </div>
+      </button>
+    );
   };
 
   return (
@@ -219,29 +225,7 @@ const Aside = ({ items, content, setNoteTab, setContent }) => {
       </h3>
       <div className="flex flex-col gap-5">
         {items.map((item) => (
-          <button
-            onClick={() => handleButton(item)}
-            className={`${
-              item.id === content.id ? "bg-white/10" : "bg-white/[3%]"
-            } transition-colors p-5 rounded-3 text-left hover:bg-white/10`}
-            key={item.id}
-          >
-            <h3 className="font-semibold text-lg text-white truncate">
-              {item.title}
-            </h3>
-            <div className="flex gap-2.5">
-              <span className="text-white/40">
-                {new Date(item.created).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric",
-                })}
-              </span>
-              <p className="truncate text-white/60">
-                {item.description.match(/^(\S+\s){5}\S+/)[0]}
-              </p>
-            </div>
-          </button>
+          <AsideButton item={item} key={item.id} />
         ))}
       </div>
     </aside>

@@ -1,44 +1,46 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useCallback } from "react";
-import { createEditor, Transforms, Text, Editor } from "slate";
+import { createEditor } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 
-const CustomEditor = {
-  isBoldMarkActive(editor) {
-    const [match] = Editor.nodes(editor, {
-      match: (n) => n.bold === true,
-      universal: true,
-    });
+import CustomEditor from "@/services/slateEditor";
 
-    return !!match;
-  },
+// const CustomEditor = {
+//   isBoldMarkActive(editor) {
+//     const [match] = Editor.nodes(editor, {
+//       match: (n) => n.bold === true,
+//       universal: true,
+//     });
 
-  isCodeBlockActive(editor) {
-    const [match] = Editor.nodes(editor, {
-      match: (n) => n.type === "code",
-    });
+//     return !!match;
+//   },
 
-    return !!match;
-  },
+//   isCodeBlockActive(editor) {
+//     const [match] = Editor.nodes(editor, {
+//       match: (n) => n.type === "code",
+//     });
 
-  toggleBoldMark(editor) {
-    const isActive = CustomEditor.isBoldMarkActive(editor);
-    Transforms.setNodes(
-      editor,
-      { bold: isActive ? null : true },
-      { match: (n) => Text.isText(n), split: true }
-    );
-  },
+//     return !!match;
+//   },
 
-  toggleCodeBlock(editor) {
-    const isActive = CustomEditor.isCodeBlockActive(editor);
-    Transforms.setNodes(
-      editor,
-      { type: isActive ? null : "code" },
-      { match: (n) => Editor.isBlock(editor, n) }
-    );
-  },
-};
+//   toggleBoldMark(editor) {
+//     const isActive = CustomEditor.isBoldMarkActive(editor);
+//     Transforms.setNodes(
+//       editor,
+//       { bold: isActive ? null : true },
+//       { match: (n) => Text.isText(n), split: true }
+//     );
+//   },
+
+//   toggleCodeBlock(editor) {
+//     const isActive = CustomEditor.isCodeBlockActive(editor);
+//     Transforms.setNodes(
+//       editor,
+//       { type: isActive ? null : "code" },
+//       { match: (n) => Editor.isBlock(editor, n) }
+//     );
+//   },
+// };
 
 const initialValue = [
   {
@@ -70,7 +72,15 @@ export default function slate() {
         <button
           onMouseDown={(event) => {
             event.preventDefault();
-            CustomEditor.toggleBoldMark(editor);
+            CustomEditor.setItalic(editor);
+          }}
+        >
+          italic
+        </button>
+        <button
+          onMouseDown={(event) => {
+            event.preventDefault();
+            CustomEditor.setBold(editor);
           }}
         >
           Bold
@@ -96,15 +106,15 @@ export default function slate() {
           switch (event.key) {
             case "`": {
               event.preventDefault();
-              CustomEditor.toggleCodeBlock(editor);
+              CustomEditor.setCodeBlock(editor);
               break;
             }
 
-            case "b": {
-              event.preventDefault();
-              CustomEditor.toggleBoldMark(editor);
-              break;
-            }
+            // case "b": {
+            //   event.preventDefault();
+            //   CustomEditor.toggleBoldMark(editor);
+            //   break;
+            // }
           }
         }}
       />
