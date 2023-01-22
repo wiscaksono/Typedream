@@ -1,8 +1,9 @@
 import { Popover, Transition, Dialog } from "@headlessui/react";
 import { useState, Fragment, useRef } from "react";
 import { BsThreeDots } from "react-icons/bs";
+import { FaRegSave, FaSearch } from "react-icons/fa";
 import { RxCalendar } from "react-icons/rx";
-import { HiOutlineTrash } from "react-icons/hi";
+import { HiOutlineTrash, HiPlus } from "react-icons/hi";
 import { HiOutlineArchiveBox } from "react-icons/hi2";
 import { toast } from "react-toastify";
 
@@ -28,7 +29,13 @@ const Content = ({ data }) => {
     <section className="space-y-[30px] w-full p-[50px]">
       <div className="flex justify-between items-center">
         <h1 className="text-[32px] font-semibold text-white">{data.title}</h1>
-        <PopoverButton data={data} />
+        <div className="flex items-center gap-5">
+          <button className="hover:bg-[#333333] bg-[#232323] transition-colors px-5 py-2 rounded-3 font-semibold text-white flex items-center gap-2">
+            <FaRegSave />
+            Save
+          </button>
+          <PopoverButton data={data} />
+        </div>
       </div>
 
       <div className="text-white/40 text-sm font-semibold flex items-center gap-5 mb-[15px]">
@@ -44,7 +51,7 @@ const Content = ({ data }) => {
           })}
         </p>
       </div>
-      <SlateEditor data={data.id} />
+      <SlateEditor data={data.description} />
     </section>
   );
 };
@@ -202,6 +209,7 @@ const Aside = ({ items, content, setContent }) => {
         <h3 className="font-semibold text-lg text-white truncate">
           {item.title}
         </h3>
+
         <div className="flex gap-2.5">
           <span className="text-white/40">
             {new Date(item.created).toLocaleDateString("en-GB", {
@@ -220,10 +228,27 @@ const Aside = ({ items, content, setContent }) => {
 
   return (
     <aside className="h-full w-[350px] bg-seconday py-[30px] px-5">
-      <h3 className="font-bold text-white text-2xl font-kaushan mb-[30px]">
-        Nowted
-      </h3>
+      <div className="flex items-center justify-between mb-[30px]">
+        <h3 className="font-bold text-white text-2xl font-kaushan">Nowted</h3>
+        <button>
+          <FaSearch className="text-white/40 text-lg" />
+        </button>
+      </div>
+
       <div className="flex flex-col gap-5">
+        <button
+          className="flex items-center justify-center text-white font-semibold py-2.5 w-full rounded-3 bg-white/[3%] hover:bg-white/10 transition-colors gap-2"
+          onClick={() =>
+            setContent({
+              title: "New note",
+              created: new Date().toISOString().replace("T", " "),
+              description: "Write something nice!",
+            })
+          }
+        >
+          <HiPlus />
+          <span>New Note</span>
+        </button>
         {items.map((item) => (
           <AsideButton item={item} key={item.id} />
         ))}

@@ -19,6 +19,7 @@ import { createEditor, Text } from "slate";
 import { withHistory } from "slate-history";
 import { Editable, Slate, withReact } from "slate-react";
 import isHotkey from "is-hotkey";
+// import Plain from "slate-plain-serializer";
 
 import MarkButton from "./MarkButton";
 import BlockButton from "./BlockButton";
@@ -62,34 +63,10 @@ export default function SlateEditor({ data }) {
     },
     [search]
   );
-  const initialValue = [
-    {
-      type: "paragraph",
-      children: [
-        {
-          text: "This is editable text that you can search. As you search, it looks for matching strings of text, and adds ",
-        },
-        { text: "decorations", bold: true },
-        { text: " to them in realtime." },
-      ],
-    },
-    {
-      type: "paragraph",
-      children: [
-        { text: "Try it out for yourself by typing in the search box above!" },
-      ],
-    },
-  ];
 
   useEffect(() => {
-    setValue(
-      CustomEditor.deserialize(
-        localStorage.getItem("content") || "A String of plain text"
-      )
-    );
+    setValue(CustomEditor.deserialize(data || "A String of plain text"));
   }, []);
-
-  console.log(value);
 
   const handleChange = (value) => {
     const isAstChange = editor.operations.some(
@@ -100,11 +77,13 @@ export default function SlateEditor({ data }) {
     }
   };
 
+  if (!value) return;
+
   return (
     <div className="h-full">
       <Slate
         editor={editor}
-        value={initialValue}
+        value={value}
         onChange={(value) => handleChange(value)}
       >
         <Toolbar>
