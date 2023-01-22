@@ -19,7 +19,6 @@ import { createEditor, Text } from "slate";
 import { withHistory } from "slate-history";
 import { Editable, Slate, withReact } from "slate-react";
 import isHotkey from "is-hotkey";
-// import Plain from "slate-plain-serializer";
 
 import MarkButton from "./MarkButton";
 import BlockButton from "./BlockButton";
@@ -28,9 +27,10 @@ import Leaf from "./Slate/Leaf";
 import Toolbar from "./Toolbar";
 
 import CustomEditor from "@/services/slateEditor";
+import api from "@/services/api";
 import { HOTKEYS_BLOCK, HOTKEYS_MARK } from "@/services/utils";
 
-export default function SlateEditor({ data }) {
+export default function SlateEditor({ data, id, setValues }) {
   const [value, setValue] = useState();
   const [search, setSearch] = useState();
   const [isSearch, setIsSearch] = useState(false);
@@ -72,9 +72,13 @@ export default function SlateEditor({ data }) {
     const isAstChange = editor.operations.some(
       (op) => "set_selection" !== op.type
     );
-    if (isAstChange) {
-      localStorage.setItem("content", CustomEditor.serialize(value));
-    }
+    if (isAstChange)
+      () => {
+        setValues({
+          description: CustomEditor.serialize(value),
+        });
+        console.log("setted");
+      };
   };
 
   if (!value) return;

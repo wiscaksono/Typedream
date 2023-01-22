@@ -1,5 +1,5 @@
 import { Popover, Transition, Dialog } from "@headlessui/react";
-import { useState, Fragment, useRef } from "react";
+import { useState, Fragment, useRef, useEffect } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { FaRegSave, FaSearch } from "react-icons/fa";
 import { RxCalendar } from "react-icons/rx";
@@ -25,12 +25,29 @@ export default function Home({ items }) {
 }
 
 const Content = ({ data }) => {
+  const [values, setValues] = useState(data.description);
+  const handleSave = async () => {
+    try {
+      await api.update("notes", data.id, {
+        title: data.title,
+        description: data.description,
+      });
+      toast.success("Successfully saved");
+    } catch (err) {
+      toast.error("Error");
+      console.log(err);
+    }
+  };
+
   return (
     <section className="space-y-[30px] w-full p-[50px]">
       <div className="flex justify-between items-center">
         <h1 className="text-[32px] font-semibold text-white">{data.title}</h1>
         <div className="flex items-center gap-5">
-          <button className="hover:bg-[#333333] bg-[#232323] transition-colors px-5 py-2 rounded-3 font-semibold text-white flex items-center gap-2">
+          <button
+            onClick={handleSave}
+            className="hover:bg-[#333333] bg-[#232323] transition-colors px-5 py-2 rounded-3 font-semibold text-white flex items-center gap-2"
+          >
             <FaRegSave />
             Save
           </button>
@@ -51,7 +68,7 @@ const Content = ({ data }) => {
           })}
         </p>
       </div>
-      <SlateEditor data={data.description} />
+      <SlateEditor data={values} id={data.id} setValue={setValues} />
     </section>
   );
 };
@@ -63,7 +80,7 @@ const PopoverButton = (data) => {
 
   const handleDelete = async () => {
     try {
-      await api.remove(`/notes/records/${id}`);
+      await api.delete("notes", id);
       toast.success("Successfully deleted");
       setOpenModalDelete(false);
     } catch (error) {
